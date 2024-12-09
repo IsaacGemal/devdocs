@@ -1,13 +1,12 @@
 import { useState } from 'react'
-import { ThumbsUp, ThumbsDown, Search, Star, AlertTriangle } from 'lucide-react'
+import { ThumbsUp, ThumbsDown, Search, AlertTriangle } from 'lucide-react'
 
-const DocScoreApp = () => {
+const DevDocsApp = () => {
     const [apis, setApis] = useState([
         {
             id: 1,
             name: 'Stripe',
             url: 'https://stripe.com/docs',
-            rating: 4.8,
             votes: 532,
             issues: ['Some advanced concepts could use more examples'],
             strengths: ['Clear navigation', 'Great code examples', 'Interactive tutorials']
@@ -16,7 +15,6 @@ const DocScoreApp = () => {
             id: 2,
             name: 'Twilio',
             url: 'https://www.twilio.com/docs',
-            rating: 2.1,
             votes: 328,
             issues: ['Frequent typos', 'Outdated examples', 'Confusing navigation'],
             strengths: ['Good API reference']
@@ -28,6 +26,18 @@ const DocScoreApp = () => {
     const filteredApis = apis.filter(api =>
         api.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
+
+    const handleVote = (apiId: number, isUpvote: boolean) => {
+        setApis(apis.map(api => {
+            if (api.id === apiId) {
+                return {
+                    ...api,
+                    votes: isUpvote ? api.votes + 1 : api.votes - 1
+                }
+            }
+            return api
+        }))
+    }
 
     return (
         <div className="max-w-6xl mx-auto p-6">
@@ -44,71 +54,79 @@ const DocScoreApp = () => {
                 <input
                     type="text"
                     placeholder="Search API documentation..."
-                    className="w-full pl-10 pr-4 py-2 border rounded-lg"
+                    className="w-full pl-10 pr-4 py-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
             </div>
 
             {/* API List */}
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-8 md:grid-cols-2">
                 {filteredApis.map(api => (
-                    <div key={api.id} className="border rounded-lg p-6 hover:shadow-lg transition-shadow bg-white">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-bold">{api.name}</h2>
-                            <div className="flex items-center">
-                                <Star className="text-yellow-400" size={20} fill="currentColor" />
-                                <span className="ml-1 font-bold">{api.rating.toFixed(1)}</span>
-                            </div>
-                        </div>
-
-                        <div className="mb-4">
-                            <a
-                                href={api.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-500 hover:underline"
-                            >
-                                View Documentation
-                            </a>
-                            <div className="text-sm text-gray-500 mt-1">
+                    <div key={api.id} className="border rounded-xl p-8 hover:shadow-md transition-all duration-300 bg-white">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-2xl font-bold text-gray-800">{api.name}</h2>
+                            <div className="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
                                 {api.votes} votes
                             </div>
                         </div>
 
+                        {/* Documentation Link */}
+                        <a
+                            href={api.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block mb-6 text-blue-500 hover:text-blue-700 font-medium hover:underline transition-colors"
+                        >
+                            View Documentation →
+                        </a>
+
                         {/* Strengths */}
-                        <div className="mb-4">
-                            <h3 className="font-semibold mb-2 flex items-center">
-                                <ThumbsUp size={16} className="mr-2 text-green-500" />
+                        <div className="mb-6">
+                            <h3 className="font-semibold mb-3 flex items-center text-gray-800">
+                                <ThumbsUp size={18} className="mr-2 text-green-500" />
                                 Strengths
                             </h3>
-                            <ul className="text-sm">
+                            <ul className="space-y-2">
                                 {api.strengths.map((strength, idx) => (
-                                    <li key={idx} className="mb-1">{strength}</li>
+                                    <li key={idx} className="flex items-center text-gray-600">
+                                        <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
+                                        {strength}
+                                    </li>
                                 ))}
                             </ul>
                         </div>
 
                         {/* Issues */}
-                        <div>
-                            <h3 className="font-semibold mb-2 flex items-center">
-                                <AlertTriangle size={16} className="mr-2 text-orange-500" />
+                        <div className="mb-6">
+                            <h3 className="font-semibold mb-3 flex items-center text-gray-800">
+                                <AlertTriangle size={18} className="mr-2 text-orange-500" />
                                 Areas for Improvement
                             </h3>
-                            <ul className="text-sm">
+                            <ul className="space-y-2">
                                 {api.issues.map((issue, idx) => (
-                                    <li key={idx} className="mb-1">{issue}</li>
+                                    <li key={idx} className="flex items-center text-gray-600">
+                                        <div className="w-2 h-2 rounded-full bg-orange-500 mr-2"></div>
+                                        {issue}
+                                    </li>
                                 ))}
                             </ul>
                         </div>
 
                         {/* Rating Buttons */}
-                        <div className="mt-4 flex justify-end gap-2">
-                            <button className="p-2 rounded hover:bg-gray-100">
-                                <ThumbsUp size={20} className="text-gray-600" />
+                        <div className="flex justify-end gap-3">
+                            <button
+                                className="p-3 rounded-lg hover:bg-gray-100 transition-colors group"
+                                onClick={() => handleVote(api.id, true)}
+                            >
+                                <ThumbsUp size={22} className="text-gray-400 group-hover:text-green-500 transition-colors" />
                             </button>
-                            <button className="p-2 rounded hover:bg-gray-100">
-                                <ThumbsDown size={20} className="text-gray-600" />
+                            <button
+                                className="p-3 rounded-lg hover:bg-gray-100 transition-colors group"
+                                onClick={() => handleVote(api.id, false)}
+                            >
+                                <ThumbsDown size={22} className="text-gray-400 group-hover:text-red-500 transition-colors" />
                             </button>
                         </div>
                     </div>
@@ -118,4 +136,4 @@ const DocScoreApp = () => {
     )
 }
 
-export default DocScoreApp
+export default DevDocsApp
