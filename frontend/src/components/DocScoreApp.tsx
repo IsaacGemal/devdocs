@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { ThumbsUp, ThumbsDown, Search, AlertTriangle, Plus } from 'lucide-react'
+import { ThumbsUp, ThumbsDown, Search, AlertTriangle, Plus, Share2 } from 'lucide-react'
 import SubmitDocForm from './SubmitFormDoc.tsx'
+import { Toaster, toast } from 'react-hot-toast'
 
 const DevDocsApp = () => {
     const [apis, setApis] = useState([
@@ -56,6 +57,23 @@ const DevDocsApp = () => {
             return api
         }))
     }
+
+    const handleShare = async (url: string) => {
+        try {
+            await navigator.clipboard.writeText(url);
+            toast.success('URL copied to clipboard!', {
+                duration: 2000,
+                position: 'bottom-center',
+                style: {
+                    background: '#333',
+                    color: '#fff',
+                },
+            });
+        } catch (err) {
+            console.error('Failed to copy URL:', err);
+            toast.error('Failed to copy URL');
+        }
+    };
 
     return (
         <>
@@ -143,8 +161,15 @@ const DevDocsApp = () => {
                                     </ul>
                                 </div>
 
-                                {/* Rating Buttons */}
+                                {/* Rating and Share Buttons */}
                                 <div className="flex justify-end gap-3">
+                                    <button
+                                        className="p-3 rounded-lg hover:bg-gray-100 transition-colors group"
+                                        onClick={() => handleShare(api.url)}
+                                        title="Share documentation"
+                                    >
+                                        <Share2 size={22} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                                    </button>
                                     <button
                                         className="p-3 rounded-lg hover:bg-gray-100 transition-colors group"
                                         onClick={() => handleVote(api.id, true)}
@@ -163,7 +188,7 @@ const DevDocsApp = () => {
                     </div>
                 </div>
             </div>
-
+            <Toaster />
             {/* Modal should be outside the blurred wrapper */}
             {isModalOpen && (
                 <SubmitDocForm
