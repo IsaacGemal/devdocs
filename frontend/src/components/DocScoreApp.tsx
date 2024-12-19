@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ThumbsUp, ThumbsDown, Search, AlertTriangle, Plus, Share2 } from 'lucide-react'
 import SubmitDocForm from './SubmitFormDoc.tsx'
 import { Toaster, toast } from 'react-hot-toast'
+import { Link } from 'react-router-dom'
 
 const DevDocsApp = () => {
     const [apis, setApis] = useState([
@@ -186,6 +187,13 @@ const DevDocsApp = () => {
                             </div>
                         ))}
                     </div>
+
+                    {/* About Link at the Bottom */}
+                    <footer className="text-center mt-12">
+                        <Link to="/about" className="text-blue-500 hover:text-blue-700 font-medium hover:underline transition-colors">
+                            About
+                        </Link>
+                    </footer>
                 </div>
             </div>
             <Toaster />
